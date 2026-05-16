@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>ICTI Tool</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+
+:root{
+    --primary:#7c3aed;
+    --secondary:#4f46e5;
+    --dark:#0f172a;
+    --card:#111827;
+    --input:#1e293b;
+    --border:rgba(255,255,255,0.08);
+    --text:#ffffff;
+    --muted:#94a3b8;
+    --success:#22c55e;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+
+    background:
+    radial-gradient(circle at top left,#312e81 0%,transparent 30%),
+    radial-gradient(circle at bottom right,#7c3aed 0%,transparent 30%),
+    var(--dark);
+
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+
+    width:100%;
+    max-width:850px;
+
+    background:rgba(17,24,39,0.9);
+
+    border:1px solid var(--border);
+
+    border-radius:30px;
+
+    padding:40px;
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+
+}
+
+.logo{
+
+    width:75px;
+    height:75px;
+
+    margin:auto;
+
+    border-radius:20px;
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:white;
+    font-size:28px;
+    font-weight:700;
+
+    margin-bottom:20px;
+}
+
+h1{
+
+    color:white;
+    text-align:center;
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:35px;
+}
+
+.search-box{
+
+    position:relative;
+    margin-bottom:30px;
+}
+
+.search-box input{
+
+    width:100%;
+    height:68px;
+
+    border:none;
+    outline:none;
+
+    background:var(--input);
+
+    border-radius:18px;
+
+    padding:0 25px 0 65px;
+
+    color:white;
+    font-size:17px;
+
+    border:2px solid transparent;
+
+    transition:0.3s;
+}
+
+.search-box input:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:
+    0 0 25px rgba(124,58,237,0.4);
+}
+
+.search-icon{
+
+    position:absolute;
+
+    left:24px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#94a3b8;
+
+    font-size:22px;
+}
+
+.results{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.result-card{
+
+    background:linear-gradient(
+        135deg,
+        #182033,
+        #111827
+    );
+
+    border-radius:22px;
+
+    padding:22px;
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    transition:0.3s;
+}
+
+.result-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+.package-name{
+
+    color:white;
+
+    font-size:20px;
+    font-weight:600;
+
+    margin-bottom:18px;
+}
+
+.icti-row{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.icti-code{
+
+    flex:1;
+
+    background:rgba(255,255,255,0.06);
+
+    border-radius:15px;
+
+    padding:15px 18px;
+
+    color:#8be9fd;
+
+    font-weight:600;
+
+    overflow:auto;
+}
+
+.copy-btn{
+
+    min-width:120px;
+    height:52px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--secondary)
+    );
+
+    color:white;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.copy-btn:hover{
+
+    transform:scale(1.05);
+}
+
+.empty-state{
+
+    text-align:center;
+
+    padding:50px 20px;
+
+    color:var(--muted);
+}
+
+.empty-state h2{
+
+    color:white;
+
+    margin-bottom:10px;
+}
+
+.toast{
+
+    position:fixed;
+
+    bottom:30px;
+    right:30px;
+
+    background:var(--success);
+
+    color:white;
+
+    padding:15px 22px;
+
+    border-radius:15px;
+
+    font-weight:600;
+
+    opacity:0;
+
+    transform:translateY(20px);
+
+    transition:0.3s;
+}
+
+.toast.show{
+
+    opacity:1;
+
+    transform:translateY(0);
+}
+
+@media(max-width:768px){
+
+    .container{
+
+        padding:25px;
+    }
+
+    h1{
+
+        font-size:32px;
+    }
+
+    .icti-row{
+
+        flex-direction:column;
+    }
+
+    .copy-btn{
+
+        width:100%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        I
+    </div>
+
+    <h1>ICTI Tool</h1>
+
+    <div class="subtitle">
+        Search package name and copy ICTI instantly
+    </div>
+
+    <div class="search-box">
+
+        <span class="search-icon">
+            ⌕
+        </span>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search package name..."
+        >
+
+    </div>
+
+    <div class="results" id="results">
+
+        <div class="empty-state">
+
+            <h2>Start Searching</h2>
+
+            <p>
+                Type any package name to display ICTI
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="toast" id="toast">
+    ICTI Copied Successfully
+</div>
+
+<script>
+
+let packages = [];
+
+fetch("ICTI-Tool.xlsx")
+
+.then(response => response.arrayBuffer())
+
+.then(data => {
+
+    const workbook = XLSX.read(data, {
+        type: "array"
+    });
+
+    const sheetName = workbook.SheetNames[0];
+
+    const worksheet = workbook.Sheets[sheetName];
+
+    const rawData = XLSX.utils.sheet_to_json(
+        worksheet,
+        {
+            defval: ""
+        }
+    );
+
+    packages = rawData.map(row => {
+
+        const cleanRow = {};
+
+        Object.keys(row).forEach(key => {
+
+            cleanRow[key.trim().toLowerCase()] = row[key];
+
+        });
+
+        return {
+
+            packageName:
+            cleanRow["package name"],
+
+            icti:
+            cleanRow["package icti"]
+
+        };
+
+    });
+
+    console.log(packages);
+
+})
+
+.catch(error => {
+
+    console.error(
+        "Excel Loading Error:",
+        error
+    );
+
+});
+
+const searchInput =
+document.getElementById("searchInput");
+
+const results =
+document.getElementById("results");
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+    const value =
+    searchInput.value
+    .toLowerCase()
+    .trim();
+
+    if(value === ""){
+
+        results.innerHTML = `
+
+        <div class="empty-state">
+
+            <h2>
+                Start Searching
+            </h2>
+
+            <p>
+                Type any package name to display ICTI
+            </p>
+
+        </div>
+
+        `;
+
+        return;
+    }
+
+    const filtered = packages.filter(item =>
+
+        item.packageName &&
+
+        item.packageName
+        .toLowerCase()
+        .includes(value)
+
+    );
+
+    if(filtered.length === 0){
+
+        results.innerHTML = `
+
+        <div class="empty-state">
+
+            <h2>
+                No Results Found
+            </h2>
+
+            <p>
+                Try another package name
+            </p>
+
+        </div>
+
+        `;
+
+        return;
+    }
+
+    results.innerHTML = "";
+
+    filtered.forEach(item => {
+
+        results.innerHTML += `
+
+        <div class="result-card">
+
+            <div class="package-name">
+
+                ${item.packageName}
+
+            </div>
+
+            <div class="icti-row">
+
+                <div class="icti-code">
+
+                    ${item.icti}
+
+                </div>
+
+                <button
+                    class="copy-btn"
+                    onclick="copyICTI('${item.icti}')"
+                >
+
+                    Copy
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+    });
+
+});
+
+function copyICTI(text){
+
+    navigator.clipboard.writeText(text);
+
+    const toast =
+    document.getElementById("toast");
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    },2000);
+}
+
+</script>
+
+</body>
+</html>
