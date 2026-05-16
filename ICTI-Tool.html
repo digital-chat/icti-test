@@ -487,15 +487,27 @@ searchInput.addEventListener(
         return;
     }
 
-    const filtered = packages.filter(item =>
+    const uniquePackages = [];
 
-        item.packageName &&
+    const filtered = packages.filter(item => {
 
-        item.packageName
-        .toLowerCase()
-        .includes(value)
+        if(
+            item.packageName &&
+            item.packageName
+            .toLowerCase()
+            .includes(value)
+        ){
 
-    );
+            if(!uniquePackages.includes(item.packageName)){
+
+                uniquePackages.push(item.packageName);
+
+                return true;
+            }
+        }
+
+        return false;
+    });
 
     if(filtered.length === 0){
 
@@ -520,7 +532,7 @@ searchInput.addEventListener(
 
     results.innerHTML = "";
 
-    filtered.forEach(item => {
+    filtered.slice(0,5).forEach(item => {
 
         results.innerHTML += `
 
@@ -557,7 +569,6 @@ searchInput.addEventListener(
     });
 
 });
-
 function copyICTI(text){
 
     navigator.clipboard.writeText(text);
